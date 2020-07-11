@@ -25,38 +25,43 @@ import org.robolectric.annotation.Config
 @RunWith(AndroidJUnit4::class)
 @Config(manifest = Config.NONE)
 class MainPresenterImplTest {
-
-    private lateinit var mPresenter: MainPresenterImpl
+   private lateinit var mPresenter : MainPresenterImpl
 
     @RelaxedMockK
-    private lateinit var mView: MainView
+    private lateinit var mView : MainView
 
-    private lateinit var mBurgerModel: BurgerModel
+    private lateinit var mModel : BurgerModel
 
-    // Set Up Objects
     @Before
-    fun setUpPresenter() {
+    fun setUpPresenter(){
         MockKAnnotations.init(this)
 
         BurgerModelImpl.init(ApplicationProvider.getApplicationContext())
-        mBurgerModel = MockBurgerModelImpl
+        mModel=MockBurgerModelImpl
 
-        mPresenter = MainPresenterImpl()
+        mPresenter= MainPresenterImpl()
         mPresenter.initPresenter(mView)
-        mPresenter.mBurgerModel = this.mBurgerModel
+        mPresenter.mBurgerModel=this.mModel
     }
 
-
     @Test
-    fun onTapAddToCart_callAddBurgerToCart() {
-        mPresenter.onTapAddToCart(getDummyBurger(), getDummyImageView())
+    fun onTapAddToCart_callAddBurgerToCart(){
+        val burgerOne=BurgerVO()
+        burgerOne.burgerId=1
+        burgerOne.burgerName="Cheese Burger"
+        burgerOne.burgerImageUrl=""
+        burgerOne.burgerDescription="The All-American Cheeseburger has certain non-negotiable elements: American cheese is one of them. Rather than unwrap individual singles, get sliced cheese from your nearest deli counter — it tastes better and melts slower and more evenly. "
+
+        val imageView = ImageView(ApplicationProvider.getApplicationContext())
+
+        mPresenter.onTapAddToCart(burgerOne,imageView)
         verify {
-            mView.addBurgerToCart(getDummyBurger(), getDummyImageView())
+            mView.addBurgerToCart(burgerOne,imageView)
         }
     }
 
     @Test
-    fun onTapCart_callNavigateToCartScreen() {
+    fun onTapCart_callNavigateToCartScreen(){
         mPresenter.onTapCart()
         verify {
             mView.navigatetoCartScreen()
@@ -64,49 +69,31 @@ class MainPresenterImplTest {
     }
 
     @Test
-    fun onTapBurger_callNavigateToBurgerDetails() {
+    fun onUIReady_callDisplayBurgerList_callDisplayCountInCart(){
+        val lifecycleOwner = mock(LifecycleOwner::class.java)
+        val lifecycleRegistry = LifecycleRegistry(lifecycleOwner)
+        lifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        `when`(lifecycleOwner.lifecycle).thenReturn(lifecycleRegistry)
 
-        mPresenter.onTapBurger(getDummyBurger(), getDummyImageView())
+        mPresenter.onUIReady(lifecycleOwner)
         verify {
-            mView.navigateToBurgerDetailsScreen(getDummyBurger().burgerId, getDummyImageView())
+            mView.displayBurgerList(getDummyBurgers())
         }
     }
 
+    @Test
+    fun onTapBurger_callNavigateToBurgerDetailScreen(){
+        val burgerTwo=BurgerVO()
+        burgerTwo.burgerId=2
+        burgerTwo.burgerName="Chicken Burger"
+        burgerTwo.burgerImageUrl=""
+        burgerTwo.burgerDescription="The All-American Cheeseburger has certain non-negotiable elements: American cheese is one of them. Rather than unwrap individual singles, get sliced cheese from your nearest deli counter — it tastes better and melts slower and more evenly. "
 
-    // Prepare Necessary Objects
-    companion object {
+        val imageView = ImageView(ApplicationProvider.getApplicationContext())
 
-        fun getMockLifeCycleOwner() : LifecycleOwner{
-            val lifeCycleOwner = mock(LifecycleOwner::class.java)
-            val lifeCycleRegistry = LifecycleRegistry(lifeCycleOwner)
-            lifeCycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-            `when`(lifeCycleOwner.lifecycle).thenReturn(lifeCycleRegistry)
-            return lifeCycleOwner
-        }
-
-        fun getDummyBurger(): BurgerVO {
-            val tappedBurger = BurgerVO()
-            tappedBurger.burgerId = 1
-            tappedBurger.burgerName = "Big Mac"
-            tappedBurger.burgerImageUrl = ""
-            tappedBurger.burgerDescription = "Big Mac Burger"
-            return tappedBurger
-        }
-
-        fun getDummyImageView(): ImageView {
-            return ImageView(ApplicationProvider.getApplicationContext())
+        mPresenter.onTapBurger(burgerTwo,imageView)
+        verify {
+            mView.navigateToBurgerDetailsScreen(burgerTwo.burgerId,imageView)
         }
     }
-
-
-
-//
-//    @Test
-//    fun onUIReady_callDisplayBurgerList_callDisplayCountInCart() {
-//        mPresenter.onUIReady(getMockLifeCycleOwner())
-//        verify {
-//            mView.displayBurgerList(getDummyBurgers())
-//            mView.displayCountInCart(0)
-//        }
-//    }
 }

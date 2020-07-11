@@ -1,0 +1,7 @@
+#Sat Jul 11 11:30:52 MMT 2020
+base.0=C\:\\Users\\Dell\\AndroidStudioProjects\\Assign11\\BurgerJoint\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\out\\classes.dex
+path.1=classes.dex
+renamed.1=classes2.dex
+path.0=classes.dex
+renamed.0=classes.dex
+base.1=C\:\\Users\\Dell\\AndroidStudioProjects\\Assign11\\BurgerJoint\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\out\\classes.dex
