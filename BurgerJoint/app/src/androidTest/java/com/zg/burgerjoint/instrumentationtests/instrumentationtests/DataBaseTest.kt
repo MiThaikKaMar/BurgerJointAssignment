@@ -1,4 +1,4 @@
-package com.zg.burgerjoint.instrumentationtests
+package com.zg.burgerjoint.instrumentationtests.instrumentationtests
 
 import android.content.Context
 import androidx.room.Room
